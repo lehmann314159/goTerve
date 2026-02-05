@@ -30,13 +30,18 @@ func (f *Finnish) Conjugate(infinitive string, verbType models.VerbType, tense m
 }
 
 // ConjugateAll returns all conjugated forms for a verb in a given tense
-// Returns: [minä, sinä, hän, me, te, he]
+// Returns: [minä, sinä, hän, me, te, he] for most tenses
+// For imperative: [sinä, te, me, hän, he] (common forms)
 func (f *Finnish) ConjugateAll(infinitive string, verbType models.VerbType, tense models.Tense) []string {
 	switch tense {
 	case models.TensePresent:
 		return f.conjugatePresent(infinitive, verbType)
 	case models.TenseImperfect:
 		return f.conjugateImperfect(infinitive, verbType)
+	case models.TensePerfect:
+		return f.conjugatePerfect(infinitive, verbType)
+	case models.TenseImperative:
+		return f.conjugateImperative(infinitive, verbType)
 	case models.TenseConditional:
 		return f.conjugateConditional(infinitive, verbType)
 	default:
@@ -207,5 +212,151 @@ func (f *Finnish) conjugateConditional(infinitive string, verbType models.VerbTy
 		condStem + "mme",                      // me puhuisimme
 		condStem + "tte",                      // te puhuisitte
 		condStem + "v" + string(harmony) + "t", // he puhuisivat
+	}
+}
+
+// conjugatePerfect returns perfect tense conjugations
+// Perfect = olla (present) + past participle (-nut/-nyt for singular, -neet for plural)
+func (f *Finnish) conjugatePerfect(infinitive string, verbType models.VerbType) []string {
+	participle := f.getPastParticiple(infinitive, verbType)
+	participlePlural := f.getPastParticiplePlural(infinitive, verbType)
+
+	return []string{
+		"olen " + participle,       // minä olen puhunut
+		"olet " + participle,       // sinä olet puhunut
+		"on " + participle,         // hän on puhunut
+		"olemme " + participlePlural, // me olemme puhuneet
+		"olette " + participlePlural, // te olette puhuneet
+		"ovat " + participlePlural,   // he ovat puhuneet
+	}
+}
+
+// getPastParticiple returns the singular past participle (-nut/-nyt)
+func (f *Finnish) getPastParticiple(infinitive string, verbType models.VerbType) string {
+	stem := getStem(infinitive, verbType)
+	harmony := getVowelHarmony(infinitive)
+
+	// Determine -nut or -nyt based on vowel harmony
+	ending := "nut"
+	if harmony == 'ä' {
+		ending = "nyt"
+	}
+
+	switch verbType {
+	case models.VerbTypeI:
+		// puhua -> puhunut, sanoa -> sanonut
+		return stem + ending
+	case models.VerbTypeII:
+		// syödä -> syönyt, juoda -> juonut
+		return stem + ending
+	case models.VerbTypeIII:
+		// tulla -> tullut, mennä -> mennyt
+		// Double the consonant
+		runes := []rune(stem)
+		if len(runes) > 0 {
+			lastChar := runes[len(runes)-1]
+			return stem + string(lastChar) + "ut"
+		}
+		return stem + ending
+	case models.VerbTypeIV:
+		// tavata -> tavannut, haluta -> halunnut
+		return stem + "n" + ending
+	case models.VerbTypeV:
+		// tarvita -> tarvinnut
+		return stem + "n" + ending
+	case models.VerbTypeVI:
+		// vanheta -> vanhennut
+		return stem + "n" + ending
+	}
+
+	return stem + ending
+}
+
+// getPastParticiplePlural returns the plural past participle (-neet)
+func (f *Finnish) getPastParticiplePlural(infinitive string, verbType models.VerbType) string {
+	stem := getStem(infinitive, verbType)
+	harmony := getVowelHarmony(infinitive)
+
+	// Determine -neet or -neet based on vowel harmony
+	ending := "neet"
+	if harmony == 'ä' {
+		ending = "neet"
+	}
+
+	switch verbType {
+	case models.VerbTypeI:
+		// puhua -> puhuneet
+		return stem + ending
+	case models.VerbTypeII:
+		// syödä -> syöneet
+		return stem + ending
+	case models.VerbTypeIII:
+		// tulla -> tulleet, mennä -> menneet
+		runes := []rune(stem)
+		if len(runes) > 0 {
+			lastChar := runes[len(runes)-1]
+			return stem + string(lastChar) + "eet"
+		}
+		return stem + ending
+	case models.VerbTypeIV:
+		// tavata -> tavanneet
+		return stem + "n" + ending
+	case models.VerbTypeV:
+		// tarvita -> tarvinneet
+		return stem + "n" + ending
+	case models.VerbTypeVI:
+		// vanheta -> vanhenneet
+		return stem + "n" + ending
+	}
+
+	return stem + ending
+}
+
+// conjugateImperative returns imperative (command) forms
+// Returns: [sinä (2sg), te (2pl), me (1pl), hän (3sg), he (3pl)]
+func (f *Finnish) conjugateImperative(infinitive string, verbType models.VerbType) []string {
+	stem := getStem(infinitive, verbType)
+	harmony := getVowelHarmony(infinitive)
+
+	var impStem string
+	var secondSg string
+
+	switch verbType {
+	case models.VerbTypeI:
+		// puhua -> puhu!, puhukaa!
+		weakStem := applyConsonantGradation(stem, true)
+		secondSg = weakStem
+		impStem = stem
+	case models.VerbTypeII:
+		// syödä -> syö!, syökää!
+		secondSg = stem
+		impStem = stem
+	case models.VerbTypeIII:
+		// tulla -> tule!, tulkaa!
+		secondSg = stem + "e"
+		impStem = stem
+	case models.VerbTypeIV:
+		// tavata -> tapaa!, tavatkaa!
+		secondSg = stem + string(harmony) + string(harmony)
+		impStem = stem + string(harmony) + "t"
+	case models.VerbTypeV:
+		// tarvita -> tarvitse!, tarvitakaa!
+		secondSg = stem + "tse"
+		impStem = stem + "t"
+	case models.VerbTypeVI:
+		// vanheta -> vanhene!, vanetkaa!
+		secondSg = stem + "ne"
+		impStem = stem + "t"
+	default:
+		secondSg = stem
+		impStem = stem
+	}
+
+	return []string{
+		secondSg + "!",                              // sinä: puhu!
+		impStem + "k" + string(harmony) + string(harmony) + "!", // te: puhukaa!
+		impStem + "k" + string(harmony) + string(harmony) + "mme!", // me: puhukaamme!
+		impStem + "k" + string(harmony) + string(harmony) + "n!", // hän: puhukoon!
+		impStem + "k" + string(harmony) + string(harmony) + "t!", // he: puhukoot!
 	}
 }

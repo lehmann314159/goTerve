@@ -15,12 +15,41 @@
     <table class="conjugation-table">
         <thead>
             <tr>
+                {{if .IsImperative}}
+                <th>Form</th>
+                <th>Command</th>
+                {{else}}
                 <th>Person</th>
                 <th>Pronoun</th>
                 <th>Conjugation</th>
+                {{end}}
             </tr>
         </thead>
         <tbody>
+            {{if .IsImperative}}
+            {{if ge (len .AllForms) 5}}
+            <tr>
+                <td>2nd singular (you)</td>
+                <td class="conjugated">{{index .AllForms 0}}</td>
+            </tr>
+            <tr>
+                <td>2nd plural (you all)</td>
+                <td class="conjugated">{{index .AllForms 1}}</td>
+            </tr>
+            <tr>
+                <td>1st plural (let's)</td>
+                <td class="conjugated">{{index .AllForms 2}}</td>
+            </tr>
+            <tr>
+                <td>3rd singular (let him/her)</td>
+                <td class="conjugated">{{index .AllForms 3}}</td>
+            </tr>
+            <tr>
+                <td>3rd plural (let them)</td>
+                <td class="conjugated">{{index .AllForms 4}}</td>
+            </tr>
+            {{end}}
+            {{else}}
             {{if ge (len .AllForms) 6}}
             <tr>
                 <td>1st singular</td>
@@ -52,6 +81,7 @@
                 <td>he</td>
                 <td class="conjugated">{{index .AllForms 5}}</td>
             </tr>
+            {{end}}
             {{end}}
         </tbody>
     </table>

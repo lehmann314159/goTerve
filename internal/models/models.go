@@ -176,6 +176,8 @@ type Tense int
 const (
 	TensePresent     Tense = 1
 	TenseImperfect   Tense = 2
+	TensePerfect     Tense = 3
+	TenseImperative  Tense = 4
 	TenseConditional Tense = 5
 )
 
@@ -184,6 +186,8 @@ func (t Tense) Name() string {
 	names := map[Tense]string{
 		TensePresent:     "present",
 		TenseImperfect:   "imperfect",
+		TensePerfect:     "perfect",
+		TenseImperative:  "imperative",
 		TenseConditional: "conditional",
 	}
 	return names[t]

@@ -16,14 +16,15 @@ type ConjugationRequest struct {
 
 // ConjugationResult represents the result of a conjugation
 type ConjugationResult struct {
-	Verb        string   `json:"verb"`
-	Tense       string   `json:"tense"`
-	Conjugation string   `json:"conjugation"`
-	Person      string   `json:"person"`
-	Translation string   `json:"translation"`
-	VerbType    int      `json:"verbType"`
-	AllForms    []string `json:"allForms"`
-	Error       string   `json:"error,omitempty"`
+	Verb         string   `json:"verb"`
+	Tense        string   `json:"tense"`
+	Conjugation  string   `json:"conjugation"`
+	Person       string   `json:"person"`
+	Translation  string   `json:"translation"`
+	VerbType     int      `json:"verbType"`
+	AllForms     []string `json:"allForms"`
+	IsImperative bool     `json:"isImperative"`
+	Error        string   `json:"error,omitempty"`
 }
 
 // Conjugate handles verb conjugation requests
@@ -61,19 +62,24 @@ func (h *Handlers) Conjugate(w http.ResponseWriter, r *http.Request) {
 	switch tenseStr {
 	case "imperfect":
 		tense = models.TenseImperfect
+	case "perfect":
+		tense = models.TensePerfect
 	case "conditional":
 		tense = models.TenseConditional
+	case "imperative":
+		tense = models.TenseImperative
 	}
 
 	// Get all conjugations for this verb and tense
 	allForms := h.finnish.ConjugateAll(verb.Infinitive, verb.Type, tense)
 
 	result := ConjugationResult{
-		Verb:        verb.Infinitive,
-		Tense:       tense.Name(),
-		Translation: verb.Translation,
-		VerbType:    int(verb.Type),
-		AllForms:    allForms,
+		Verb:         verb.Infinitive,
+		Tense:        tense.Name(),
+		Translation:  verb.Translation,
+		VerbType:     int(verb.Type),
+		AllForms:     allForms,
+		IsImperative: tense == models.TenseImperative,
 	}
 
 	h.renderPartial(w, "conjugation-result.html", result)
