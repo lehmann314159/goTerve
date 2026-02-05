@@ -1,0 +1,97 @@
+{{define "conjugation.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">Terve</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/conjugation" class="active">Conjugation</a></li>
+            <li><a href="/declension">Declension</a></li>
+            <li><a href="/flashcards">Flashcards</a></li>
+            <li><a href="/reading">Reading</a></li>
+            <li><a href="/test">Test</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Verb Conjugation</h1>
+            <p>Practice conjugating Finnish verbs</p>
+        </div>
+
+        <div class="practice-container">
+            <form hx-post="/api/conjugate" hx-target="#result" hx-swap="innerHTML" class="practice-form">
+                <div class="form-group">
+                    <label for="verb">Select Verb (or leave empty for random)</label>
+                    <select name="verb" id="verb">
+                        <option value="">Random verb</option>
+                        {{range .Verbs}}
+                        <option value="{{.Infinitive}}">{{.Infinitive}} - {{.Translation}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tense">Tense</label>
+                    <select name="tense" id="tense">
+                        <option value="present">Present (Preesens)</option>
+                        <option value="imperfect">Imperfect (Imperfekti)</option>
+                        <option value="conditional">Conditional (Konditionaali)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Conjugate</button>
+            </form>
+
+            <div id="result" class="result-container">
+                <p class="hint">Select a verb and tense, then click "Conjugate" to see all forms.</p>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Finnish Verb Types</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Type 1 (-a/-a)</h3>
+                    <p>puhua, sanoa, lukea</p>
+                </div>
+                <div class="info-card">
+                    <h3>Type 2 (-da/-da)</h3>
+                    <p>syoda, juoda, voida</p>
+                </div>
+                <div class="info-card">
+                    <h3>Type 3 (-la/-na/-ra/-ta)</h3>
+                    <p>tulla, menna, purra</p>
+                </div>
+                <div class="info-card">
+                    <h3>Type 4 (-ata/-ata)</h3>
+                    <p>tavata, haluta, pelata</p>
+                </div>
+                <div class="info-card">
+                    <h3>Type 5 (-ita/-ita)</h3>
+                    <p>tarvita, valita</p>
+                </div>
+                <div class="info-card">
+                    <h3>Type 6 (-eta/-eta)</h3>
+                    <p>vanheta, kylmeta</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Terve - Finnish Language Learning</p>
+    </footer>
+</body>
+</html>
+{{end}}

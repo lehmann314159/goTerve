@@ -1,0 +1,61 @@
+{{define "story.html"}}
+{{if .Error}}
+<div class="error-message">
+    <p>{{.Error}}</p>
+</div>
+{{else}}
+<div class="story-display">
+    <div class="story-header">
+        <span class="level-badge">{{.CEFRLevel}}</span>
+        {{if .Topic}}
+        <span class="topic-badge">{{.Topic}}</span>
+        {{end}}
+    </div>
+
+    <div class="story-content">
+        <div class="story-finnish">
+            <h3>Suomeksi</h3>
+            <div class="story-text">{{.Story}}</div>
+        </div>
+
+        <div class="story-translation" id="translation" style="display: none;">
+            <h3>English</h3>
+            <div class="story-text">{{.Translation}}</div>
+        </div>
+    </div>
+
+    <div class="story-actions">
+        <button class="btn btn-outline" onclick="toggleTranslation()">
+            <span id="toggle-text">Show Translation</span>
+        </button>
+        <button class="btn btn-outline" onclick="readAloud()">Read Aloud</button>
+    </div>
+</div>
+
+<script>
+let translationVisible = false;
+
+function toggleTranslation() {
+    const translation = document.getElementById('translation');
+    const toggleText = document.getElementById('toggle-text');
+
+    translationVisible = !translationVisible;
+
+    if (translationVisible) {
+        translation.style.display = 'block';
+        toggleText.textContent = 'Hide Translation';
+    } else {
+        translation.style.display = 'none';
+        toggleText.textContent = 'Show Translation';
+    }
+}
+
+function readAloud() {
+    const text = `{{.Story}}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'fi-FI';
+    speechSynthesis.speak(utterance);
+}
+</script>
+{{end}}
+{{end}}

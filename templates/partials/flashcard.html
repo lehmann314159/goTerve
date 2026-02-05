@@ -1,0 +1,49 @@
+{{define "flashcard.html"}}
+{{if .Error}}
+<div class="error-message">
+    <p>{{.Error}}</p>
+</div>
+{{else}}
+<div class="flashcard" id="current-flashcard">
+    <div class="flashcard-front">
+        <div class="word-finnish">{{.Word.Finnish}}</div>
+        {{if .Word.Phonetic}}
+        <div class="word-phonetic">[{{.Word.Phonetic}}]</div>
+        {{end}}
+        <div class="word-level">{{.Word.CEFRLevel}}</div>
+    </div>
+
+    <form hx-post="/api/flashcard/answer" hx-target="#flashcard-area" hx-swap="innerHTML" class="answer-form">
+        <input type="hidden" name="word_id" value="{{.Word.ID}}">
+        <input type="hidden" name="user_id" value="guest">
+
+        <div class="form-group">
+            <label for="answer">English translation:</label>
+            <input type="text" name="answer" id="answer" autocomplete="off" autofocus placeholder="Type your answer...">
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">Check Answer</button>
+            <button type="button" class="btn btn-outline" onclick="showHint()">Show Hint</button>
+        </div>
+    </form>
+
+    {{if .IsNew}}
+    <div class="new-word-badge">New word!</div>
+    {{else if .Flashcard}}
+    <div class="flashcard-stats">
+        <span class="stat">Category: {{.Flashcard.Category}}</span>
+        <span class="stat">Reviewed: {{.Flashcard.TimesReviewed}} times</span>
+    </div>
+    {{end}}
+</div>
+
+<script>
+function showHint() {
+    const answer = "{{.Word.English}}";
+    const hint = answer.substring(0, Math.ceil(answer.length / 3)) + "...";
+    alert("Hint: " + hint);
+}
+</script>
+{{end}}
+{{end}}

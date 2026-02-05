@@ -1,0 +1,36 @@
+{{define "test-result.html"}}
+{{if .Error}}
+<div class="error-message">
+    <p>{{.Error}}</p>
+</div>
+{{else}}
+<div class="test-result {{if .Correct}}correct{{else}}incorrect{{end}}">
+    <div class="result-feedback">
+        {{if .Correct}}
+        <div class="feedback-icon correct">Correct!</div>
+        {{else}}
+        <div class="feedback-icon incorrect">Incorrect</div>
+        {{end}}
+        <p>{{.Explanation}}</p>
+    </div>
+
+    {{if .IsComplete}}
+    <div class="test-complete">
+        <h3>Test Complete!</h3>
+        <div class="final-score">
+            <span class="score">{{.Score}}</span>
+            <span class="total">/ {{.TotalQuestions}}</span>
+        </div>
+        <button class="btn btn-primary" onclick="resetTest()">Take Another Test</button>
+    </div>
+    {{else}}
+    <button class="btn btn-primary"
+            hx-get="/api/test/question?question_num={{add .QuestionNum 1}}&session_id={{.SessionID}}"
+            hx-target="#test-area"
+            hx-swap="innerHTML">
+        Next Question
+    </button>
+    {{end}}
+</div>
+{{end}}
+{{end}}

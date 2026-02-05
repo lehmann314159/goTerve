@@ -1,0 +1,80 @@
+{{define "home.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">Terve</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="/conjugation">Conjugation</a></li>
+            <li><a href="/declension">Declension</a></li>
+            <li><a href="/flashcards">Flashcards</a></li>
+            <li><a href="/reading">Reading</a></li>
+            <li><a href="/test">Test</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="hero">
+            <h1>Terve!</h1>
+            <p class="subtitle">Learn Finnish the smart way</p>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <h2>Verb Conjugation</h2>
+                <p>Practice conjugating Finnish verbs across 6 verb types and multiple tenses.</p>
+                <a href="/conjugation" class="btn">Start Practice</a>
+            </div>
+
+            <div class="feature-card">
+                <h2>Noun Declension</h2>
+                <p>Master the 15 Finnish cases with interactive declension exercises.</p>
+                <a href="/declension" class="btn">Start Practice</a>
+            </div>
+
+            <div class="feature-card">
+                <h2>Flashcards</h2>
+                <p>Build your vocabulary with spaced repetition flashcards.</p>
+                <a href="/flashcards" class="btn">Start Learning</a>
+            </div>
+
+            <div class="feature-card">
+                <h2>Reading Practice</h2>
+                <p>Read AI-generated stories tailored to your level.</p>
+                <a href="/reading" class="btn">Start Reading</a>
+            </div>
+
+            <div class="feature-card">
+                <h2>Grammar Tests</h2>
+                <p>Test your knowledge with CEFR-level assessments.</p>
+                <a href="/test" class="btn">Take Test</a>
+            </div>
+        </div>
+
+        <div class="cefr-info">
+            <h2>CEFR Levels</h2>
+            <div class="levels">
+                {{range .CEFRLevels}}
+                <span class="level-badge">{{.}}</span>
+                {{end}}
+            </div>
+            <p>Track your progress from beginner (A1) to advanced (C2)</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Terve - Finnish Language Learning</p>
+    </footer>
+</body>
+</html>
+{{end}}

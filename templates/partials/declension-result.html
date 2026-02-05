@@ -1,0 +1,32 @@
+{{define "declension-result.html"}}
+{{if .Error}}
+<div class="error-message">
+    <p>{{.Error}}</p>
+</div>
+{{else}}
+<div class="declension-result">
+    <div class="result-header">
+        <h3>{{.Noun}}</h3>
+        <span class="translation">{{.Translation}}</span>
+        <span class="declension-type">Type {{.DeclensionType}}</span>
+    </div>
+
+    <table class="declension-table">
+        <thead>
+            <tr>
+                <th>Case</th>
+                <th>Form</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $case, $form := .Cases}}
+            <tr>
+                <td>{{$case}}</td>
+                <td class="declined">{{$form}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{end}}
+{{end}}

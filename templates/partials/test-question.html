@@ -1,0 +1,39 @@
+{{define "test-question.html"}}
+{{if .Error}}
+<div class="error-message">
+    <p>{{.Error}}</p>
+</div>
+{{else}}
+<div class="test-question">
+    <div class="question-header">
+        <span class="question-number">Question {{.QuestionNum}} of {{.TotalQuestions}}</span>
+        <span class="question-type">{{.QuestionType}}</span>
+    </div>
+
+    <div class="question-text">
+        {{.Question}}
+    </div>
+
+    <form hx-post="/api/test/answer" hx-target="#test-area" hx-swap="innerHTML" class="options-form">
+        <input type="hidden" name="correct_index" value="{{.CorrectIndex}}">
+        <input type="hidden" name="question_num" value="{{.QuestionNum}}">
+        <input type="hidden" name="session_id" value="{{.SessionID}}">
+
+        <div class="options">
+            {{range $index, $option := .Options}}
+            <label class="option">
+                <input type="radio" name="answer" value="{{$index}}" required>
+                <span class="option-text">{{$option}}</span>
+            </label>
+            {{end}}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Answer</button>
+    </form>
+
+    <div class="progress-bar">
+        <div class="progress" style="width: {{mul .QuestionNum 10}}%"></div>
+    </div>
+</div>
+{{end}}
+{{end}}

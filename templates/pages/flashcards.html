@@ -1,0 +1,84 @@
+{{define "flashcards.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">Terve</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/conjugation">Conjugation</a></li>
+            <li><a href="/declension">Declension</a></li>
+            <li><a href="/flashcards" class="active">Flashcards</a></li>
+            <li><a href="/reading">Reading</a></li>
+            <li><a href="/test">Test</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Flashcards</h1>
+            <p>Build your vocabulary with spaced repetition</p>
+        </div>
+
+        <div class="flashcard-container">
+            <div class="level-selector">
+                <label for="level">CEFR Level:</label>
+                <select id="level" onchange="updateLevel(this.value)">
+                    {{range .CEFRLevels}}
+                    <option value="{{.}}">{{.}}</option>
+                    {{end}}
+                </select>
+            </div>
+
+            <div id="flashcard-area"
+                 hx-get="/api/flashcard?level=A1"
+                 hx-trigger="load"
+                 hx-swap="innerHTML">
+                <div class="loading">Loading flashcard...</div>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <h2>Progress</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">New</span>
+                    <span class="stat-value" id="stat-new">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Learning</span>
+                    <span class="stat-value" id="stat-learning">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Review</span>
+                    <span class="stat-value" id="stat-review">-</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Mastered</span>
+                    <span class="stat-value" id="stat-mastered">-</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Terve - Finnish Language Learning</p>
+    </footer>
+
+    <script>
+    function updateLevel(level) {
+        htmx.ajax('GET', '/api/flashcard?level=' + level, '#flashcard-area');
+    }
+    </script>
+</body>
+</html>
+{{end}}

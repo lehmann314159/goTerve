@@ -1,0 +1,103 @@
+{{define "test.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">Terve</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/conjugation">Conjugation</a></li>
+            <li><a href="/declension">Declension</a></li>
+            <li><a href="/flashcards">Flashcards</a></li>
+            <li><a href="/reading">Reading</a></li>
+            <li><a href="/test" class="active">Test</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Grammar Test</h1>
+            <p>Test your Finnish grammar knowledge</p>
+        </div>
+
+        <div class="test-container">
+            <div class="test-setup" id="test-setup">
+                <h2>Start a New Test</h2>
+
+                <div class="form-group">
+                    <label for="test-type">Test Type</label>
+                    <select id="test-type">
+                        <option value="vocabulary">Vocabulary</option>
+                        <option value="conjugation">Verb Conjugation</option>
+                        <option value="declension">Noun Declension</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="test-level">CEFR Level</label>
+                    <select id="test-level">
+                        {{range .CEFRLevels}}
+                        <option value="{{.}}">{{.}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="startTest()">Start Test (10 Questions)</button>
+            </div>
+
+            <div id="test-area" class="test-area" style="display: none;">
+            </div>
+
+            <div id="test-results" class="test-results" style="display: none;">
+                <h2>Test Complete!</h2>
+                <div class="score-display">
+                    <span class="score" id="final-score">0</span>
+                    <span class="total">/ 10</span>
+                </div>
+                <button class="btn" onclick="resetTest()">Take Another Test</button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Terve - Finnish Language Learning</p>
+    </footer>
+
+    <script>
+    let currentScore = 0;
+
+    function startTest() {
+        const type = document.getElementById('test-type').value;
+        const level = document.getElementById('test-level').value;
+
+        document.getElementById('test-setup').style.display = 'none';
+        document.getElementById('test-area').style.display = 'block';
+        currentScore = 0;
+
+        htmx.ajax('GET', '/api/test/question?type=' + type + '&level=' + level + '&question_num=1', '#test-area');
+    }
+
+    function resetTest() {
+        document.getElementById('test-setup').style.display = 'block';
+        document.getElementById('test-area').style.display = 'none';
+        document.getElementById('test-results').style.display = 'none';
+    }
+
+    function showResults(score) {
+        document.getElementById('test-area').style.display = 'none';
+        document.getElementById('test-results').style.display = 'block';
+        document.getElementById('final-score').textContent = score;
+    }
+    </script>
+</body>
+</html>
+{{end}}

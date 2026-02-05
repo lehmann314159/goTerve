@@ -1,0 +1,100 @@
+{{define "declension.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">Terve</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/conjugation">Conjugation</a></li>
+            <li><a href="/declension" class="active">Declension</a></li>
+            <li><a href="/flashcards">Flashcards</a></li>
+            <li><a href="/reading">Reading</a></li>
+            <li><a href="/test">Test</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="page-header">
+            <h1>Noun Declension</h1>
+            <p>Practice declining Finnish nouns through all cases</p>
+        </div>
+
+        <div class="practice-container">
+            <form hx-post="/api/decline" hx-target="#result" hx-swap="innerHTML" class="practice-form">
+                <div class="form-group">
+                    <label for="noun">Select Noun (or leave empty for random)</label>
+                    <select name="noun" id="noun">
+                        <option value="">Random noun</option>
+                        {{range .Nouns}}
+                        <option value="{{.Nominative}}">{{.Nominative}} - {{.Translation}}</option>
+                        {{end}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="case">Case (leave empty for all cases)</label>
+                    <select name="case" id="case">
+                        <option value="">All cases</option>
+                        <option value="2">Genitive (omanto)</option>
+                        <option value="3">Partitive (osanto)</option>
+                        <option value="5">Inessive (sisaolento)</option>
+                        <option value="6">Elative (sisaeronto)</option>
+                        <option value="7">Illative (sisatulento)</option>
+                        <option value="8">Adessive (ulko-olento)</option>
+                        <option value="9">Ablative (ulkoeronto)</option>
+                        <option value="10">Allative (ulkotulento)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Decline</button>
+            </form>
+
+            <div id="result" class="result-container">
+                <p class="hint">Select a noun and click "Decline" to see all case forms.</p>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Finnish Cases</h2>
+            <div class="cases-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Case</th>
+                            <th>Finnish Name</th>
+                            <th>Use</th>
+                            <th>Example (talo)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Nominative</td><td>perusmuoto</td><td>Subject</td><td>talo</td></tr>
+                        <tr><td>Genitive</td><td>omanto</td><td>Possession</td><td>talon</td></tr>
+                        <tr><td>Partitive</td><td>osanto</td><td>Partial/ongoing</td><td>taloa</td></tr>
+                        <tr><td>Inessive</td><td>sisaolento</td><td>Inside</td><td>talossa</td></tr>
+                        <tr><td>Elative</td><td>sisaeronto</td><td>From inside</td><td>talosta</td></tr>
+                        <tr><td>Illative</td><td>sisatulento</td><td>Into</td><td>taloon</td></tr>
+                        <tr><td>Adessive</td><td>ulko-olento</td><td>At/on</td><td>talolla</td></tr>
+                        <tr><td>Ablative</td><td>ulkoeronto</td><td>From (surface)</td><td>talolta</td></tr>
+                        <tr><td>Allative</td><td>ulkotulento</td><td>To (surface)</td><td>talolle</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Terve - Finnish Language Learning</p>
+    </footer>
+</body>
+</html>
+{{end}}
