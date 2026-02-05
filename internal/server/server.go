@@ -13,26 +13,28 @@ import (
 
 // Server represents the HTTP server
 type Server struct {
-	db        *store.Store
-	port      string
-	router    *chi.Mux
-	templates *template.Template
-	handlers  *handlers.Handlers
+	db           *store.Store
+	port         string
+	anthropicKey string
+	router       *chi.Mux
+	templates    *template.Template
+	handlers     *handlers.Handlers
 }
 
 // New creates a new server instance
-func New(db *store.Store, port string) *Server {
+func New(db *store.Store, port, anthropicKey string) *Server {
 	s := &Server{
-		db:     db,
-		port:   port,
-		router: chi.NewRouter(),
+		db:           db,
+		port:         port,
+		anthropicKey: anthropicKey,
+		router:       chi.NewRouter(),
 	}
 
 	// Parse templates
 	s.parseTemplates()
 
 	// Create handlers
-	s.handlers = handlers.New(db, s.templates)
+	s.handlers = handlers.New(db, s.templates, anthropicKey)
 
 	// Setup middleware
 	s.router.Use(middleware.Logger)

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 )
 
@@ -13,8 +14,7 @@ type StoryData struct {
 	Error       string `json:"error,omitempty"`
 }
 
-// GenerateStory generates a Finnish reading story
-// Note: This is a placeholder - full implementation would use Claude API
+// GenerateStory generates a Finnish reading story using Claude API
 func (h *Handlers) GenerateStory(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		h.renderPartial(w, "story.html", StoryData{Error: "Invalid form data"})
@@ -31,14 +31,27 @@ func (h *Handlers) GenerateStory(w http.ResponseWriter, r *http.Request) {
 		topic = "daily life"
 	}
 
-	// For now, return a sample story
-	// In production, this would call the Claude API
-	story := getSampleStory(cefrLevel, topic)
+	// Try to generate with Claude API
+	story, translation, err := h.claude.GenerateStory(cefrLevel, topic)
+	if err != nil {
+		log.Printf("Claude API error: %v, falling back to sample story", err)
+		// Fall back to sample story if API fails
+		sample := getSampleStory(cefrLevel, topic)
+		h.renderPartial(w, "story.html", sample)
+		return
+	}
 
-	h.renderPartial(w, "story.html", story)
+	data := StoryData{
+		Story:       story,
+		Translation: translation,
+		CEFRLevel:   cefrLevel,
+		Topic:       topic,
+	}
+
+	h.renderPartial(w, "story.html", data)
 }
 
-// getSampleStory returns a sample story based on level
+// getSampleStory returns a sample story based on level (fallback)
 func getSampleStory(level, topic string) StoryData {
 	stories := map[string]StoryData{
 		"A1": {
@@ -56,7 +69,7 @@ I like the Finnish language. It is a beautiful language.`,
 		"A2": {
 			Story: `Eilen menin kauppaan ostamaan ruokaa.
 Ostin leipää, maitoa ja juustoa.
-Kaupassa tapusin vanhan ystäväni Mikon.
+Kaupassa tapasin vanhan ystäväni Mikon.
 Me puhuimme hetken ja sovimme tapaamisen kahvilaan ensi viikolla.
 Oli mukava nähdä hänet pitkästä aikaa.`,
 			Translation: `Yesterday I went to the store to buy food.

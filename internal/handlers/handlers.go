@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/mikebway/goTerve/internal/claude"
 	"github.com/mikebway/goTerve/internal/finnish"
 	"github.com/mikebway/goTerve/internal/store"
 )
@@ -13,14 +14,16 @@ type Handlers struct {
 	db        *store.Store
 	templates *template.Template
 	finnish   *finnish.Finnish
+	claude    *claude.Client
 }
 
 // New creates a new Handlers instance
-func New(db *store.Store, templates *template.Template) *Handlers {
+func New(db *store.Store, templates *template.Template, anthropicKey string) *Handlers {
 	return &Handlers{
 		db:        db,
 		templates: templates,
 		finnish:   finnish.New(),
+		claude:    claude.New(anthropicKey),
 	}
 }
 

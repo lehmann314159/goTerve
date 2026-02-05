@@ -21,6 +21,12 @@ func main() {
 		dbPath = "./data/terve.db"
 	}
 
+	// Get Anthropic API key for story generation
+	anthropicKey := os.Getenv("ANTHROPIC_API_KEY")
+	if anthropicKey == "" {
+		log.Println("Warning: ANTHROPIC_API_KEY not set, story generation will use sample stories")
+	}
+
 	// Initialize database
 	db, err := store.New(dbPath)
 	if err != nil {
@@ -39,7 +45,7 @@ func main() {
 	}
 
 	// Create and start server
-	srv := server.New(db, port)
+	srv := server.New(db, port, anthropicKey)
 	log.Printf("Starting server on http://localhost:%s", port)
 	if err := srv.Start(); err != nil {
 		log.Fatalf("Server failed: %v", err)
