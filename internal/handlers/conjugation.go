@@ -68,6 +68,16 @@ func (h *Handlers) Conjugate(w http.ResponseWriter, r *http.Request) {
 		tense = models.TenseConditional
 	case "imperative":
 		tense = models.TenseImperative
+	case "negative_present":
+		tense = models.TenseNegativePresent
+	case "negative_imperfect":
+		tense = models.TenseNegativeImperfect
+	case "negative_perfect":
+		tense = models.TenseNegativePerfect
+	case "negative_conditional":
+		tense = models.TenseNegativeConditional
+	case "negative_imperative":
+		tense = models.TenseNegativeImperative
 	}
 
 	// Get all conjugations for this verb and tense
@@ -79,7 +89,7 @@ func (h *Handlers) Conjugate(w http.ResponseWriter, r *http.Request) {
 		Translation:  verb.Translation,
 		VerbType:     int(verb.Type),
 		AllForms:     allForms,
-		IsImperative: tense == models.TenseImperative,
+		IsImperative: tense == models.TenseImperative || tense == models.TenseNegativeImperative,
 	}
 
 	h.renderPartial(w, "conjugation-result.html", result)

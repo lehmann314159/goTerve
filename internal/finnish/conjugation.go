@@ -44,6 +44,16 @@ func (f *Finnish) ConjugateAll(infinitive string, verbType models.VerbType, tens
 		return f.conjugateImperative(infinitive, verbType)
 	case models.TenseConditional:
 		return f.conjugateConditional(infinitive, verbType)
+	case models.TenseNegativePresent:
+		return f.conjugateNegativePresent(infinitive, verbType)
+	case models.TenseNegativeImperfect:
+		return f.conjugateNegativeImperfect(infinitive, verbType)
+	case models.TenseNegativePerfect:
+		return f.conjugateNegativePerfect(infinitive, verbType)
+	case models.TenseNegativeImperative:
+		return f.conjugateNegativeImperative(infinitive, verbType)
+	case models.TenseNegativeConditional:
+		return f.conjugateNegativeConditional(infinitive, verbType)
 	default:
 		return f.conjugatePresent(infinitive, verbType)
 	}
@@ -358,5 +368,164 @@ func (f *Finnish) conjugateImperative(infinitive string, verbType models.VerbTyp
 		impStem + "k" + string(harmony) + string(harmony) + "mme!", // me: puhukaamme!
 		impStem + "k" + string(harmony) + string(harmony) + "n!", // hän: puhukoon!
 		impStem + "k" + string(harmony) + string(harmony) + "t!", // he: puhukoot!
+	}
+}
+
+// conjugateNegativePresent returns negative present tense conjugations
+// Negative uses "ei" auxiliary + verb stem (connegative)
+func (f *Finnish) conjugateNegativePresent(infinitive string, verbType models.VerbType) []string {
+	stem := getStem(infinitive, verbType)
+
+	// Get the connegative stem (same as 2nd person singular without ending)
+	var conneg string
+
+	switch verbType {
+	case models.VerbTypeI:
+		conneg = applyConsonantGradation(stem, true)
+	case models.VerbTypeII:
+		conneg = stem
+	case models.VerbTypeIII:
+		conneg = stem + "e"
+	case models.VerbTypeIV:
+		harmony := getVowelHarmony(infinitive)
+		conneg = stem + string(harmony) + string(harmony)
+	case models.VerbTypeV:
+		conneg = stem + "tse"
+	case models.VerbTypeVI:
+		conneg = stem + "ne"
+	default:
+		conneg = stem
+	}
+
+	return []string{
+		"en " + conneg,      // minä en puhu
+		"et " + conneg,      // sinä et puhu
+		"ei " + conneg,      // hän ei puhu
+		"emme " + conneg,    // me emme puhu
+		"ette " + conneg,    // te ette puhu
+		"eivät " + conneg,   // he eivät puhu
+	}
+}
+
+// conjugateNegativeImperfect returns negative imperfect (past) tense conjugations
+// Uses "ei" + past participle
+func (f *Finnish) conjugateNegativeImperfect(infinitive string, verbType models.VerbType) []string {
+	participle := f.getPastParticiple(infinitive, verbType)
+	participlePlural := f.getPastParticiplePlural(infinitive, verbType)
+
+	return []string{
+		"en " + participle,        // minä en puhunut
+		"et " + participle,        // sinä et puhunut
+		"ei " + participle,        // hän ei puhunut
+		"emme " + participlePlural, // me emme puhuneet
+		"ette " + participlePlural, // te ette puhuneet
+		"eivät " + participlePlural, // he eivät puhuneet
+	}
+}
+
+// conjugateNegativePerfect returns negative perfect tense conjugations
+// Uses "ei ole" + past participle
+func (f *Finnish) conjugateNegativePerfect(infinitive string, verbType models.VerbType) []string {
+	participle := f.getPastParticiple(infinitive, verbType)
+	participlePlural := f.getPastParticiplePlural(infinitive, verbType)
+
+	return []string{
+		"en ole " + participle,        // minä en ole puhunut
+		"et ole " + participle,        // sinä et ole puhunut
+		"ei ole " + participle,        // hän ei ole puhunut
+		"emme ole " + participlePlural, // me emme ole puhuneet
+		"ette ole " + participlePlural, // te ette ole puhuneet
+		"eivät ole " + participlePlural, // he eivät ole puhuneet
+	}
+}
+
+// conjugateNegativeConditional returns negative conditional tense conjugations
+// Uses "ei" + conditional connegative
+func (f *Finnish) conjugateNegativeConditional(infinitive string, verbType models.VerbType) []string {
+	stem := getStem(infinitive, verbType)
+	harmony := getVowelHarmony(infinitive)
+
+	// Conditional connegative is stem + isi
+	var condConneg string
+
+	switch verbType {
+	case models.VerbTypeI:
+		weakStem := applyConsonantGradation(stem, true)
+		condConneg = weakStem + "isi"
+	case models.VerbTypeII:
+		condConneg = stem + "isi"
+	case models.VerbTypeIII:
+		condConneg = stem + "isi"
+	case models.VerbTypeIV:
+		condConneg = stem + string(harmony) + "isi"
+	case models.VerbTypeV:
+		condConneg = stem + "tsisi"
+	case models.VerbTypeVI:
+		condConneg = stem + "nisi"
+	default:
+		condConneg = stem + "isi"
+	}
+
+	return []string{
+		"en " + condConneg,      // minä en puhuisi
+		"et " + condConneg,      // sinä et puhuisi
+		"ei " + condConneg,      // hän ei puhuisi
+		"emme " + condConneg,    // me emme puhuisi
+		"ette " + condConneg,    // te ette puhuisi
+		"eivät " + condConneg,   // he eivät puhuisi
+	}
+}
+
+// conjugateNegativeImperative returns negative imperative (prohibition) forms
+// Uses "älä/älkää" + connegative with -ko/-kö
+func (f *Finnish) conjugateNegativeImperative(infinitive string, verbType models.VerbType) []string {
+	stem := getStem(infinitive, verbType)
+	harmony := getVowelHarmony(infinitive)
+
+	// Get connegative stem for imperative
+	var conneg string
+	var impConneg string
+
+	switch verbType {
+	case models.VerbTypeI:
+		conneg = applyConsonantGradation(stem, true)
+		impConneg = stem + "k" + string(harmony)
+	case models.VerbTypeII:
+		conneg = stem
+		impConneg = stem + "k" + string(harmony)
+	case models.VerbTypeIII:
+		conneg = stem + "e"
+		impConneg = stem + "k" + string(harmony)
+	case models.VerbTypeIV:
+		conneg = stem + string(harmony) + string(harmony)
+		impConneg = stem + string(harmony) + "tk" + string(harmony)
+	case models.VerbTypeV:
+		conneg = stem + "tse"
+		impConneg = stem + "tk" + string(harmony)
+	case models.VerbTypeVI:
+		conneg = stem + "ne"
+		impConneg = stem + "tk" + string(harmony)
+	default:
+		conneg = stem
+		impConneg = stem + "k" + string(harmony)
+	}
+
+	// älä/älkää forms
+	ala := "älä"
+	alkaa := "älkää"
+	alkaamme := "älkäämme"
+	alkoon := "älköön"
+	alkoot := "älkööt"
+	if harmony == 'a' {
+		// Back vowel harmony - but älä etc. always use front vowels
+		// älä, älkää etc. are fixed forms
+	}
+
+	return []string{
+		ala + " " + conneg + "!",           // älä puhu!
+		alkaa + " " + impConneg + "!",      // älkää puhuko!
+		alkaamme + " " + impConneg + "!",   // älkäämme puhuko!
+		alkoon + " " + impConneg + "!",     // älköön puhuko!
+		alkoot + " " + impConneg + "!",     // älkööt puhuko!
 	}
 }

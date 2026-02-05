@@ -174,21 +174,31 @@ type Session struct {
 type Tense int
 
 const (
-	TensePresent     Tense = 1
-	TenseImperfect   Tense = 2
-	TensePerfect     Tense = 3
-	TenseImperative  Tense = 4
-	TenseConditional Tense = 5
+	TensePresent             Tense = 1
+	TenseImperfect           Tense = 2
+	TensePerfect             Tense = 3
+	TenseImperative          Tense = 4
+	TenseConditional         Tense = 5
+	TenseNegativePresent     Tense = 11
+	TenseNegativeImperfect   Tense = 12
+	TenseNegativePerfect     Tense = 13
+	TenseNegativeImperative  Tense = 14
+	TenseNegativeConditional Tense = 15
 )
 
 // TenseName returns the English name of a tense
 func (t Tense) Name() string {
 	names := map[Tense]string{
-		TensePresent:     "present",
-		TenseImperfect:   "imperfect",
-		TensePerfect:     "perfect",
-		TenseImperative:  "imperative",
-		TenseConditional: "conditional",
+		TensePresent:             "present",
+		TenseImperfect:           "imperfect",
+		TensePerfect:             "perfect",
+		TenseImperative:          "imperative",
+		TenseConditional:         "conditional",
+		TenseNegativePresent:     "negative present",
+		TenseNegativeImperfect:   "negative imperfect",
+		TenseNegativePerfect:     "negative perfect",
+		TenseNegativeImperative:  "negative imperative",
+		TenseNegativeConditional: "negative conditional",
 	}
 	return names[t]
 }
