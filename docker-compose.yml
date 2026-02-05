@@ -2,14 +2,18 @@ services:
   terve:
     image: lehmann314159/terve:latest
     container_name: terve
-    ports:
-      - "3001:3001"
     volumes:
       - terve-data:/app/data
     environment:
-      - PORT=3001
+      - PORT=3333
       - DATABASE_PATH=/app/data/terve.db
     restart: unless-stopped
+    networks:
+      - web
 
 volumes:
   terve-data:
+
+networks:
+  web:
+    external: true
